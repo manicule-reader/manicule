@@ -13,10 +13,10 @@ app.use(express.static("public"));
 let port = 3000;
 let hostname = "localhost";
 
-app.get("/import-text", (req, res) => {
-  let baseUrl = "http://mirrors.xmission.com/gutenberg/";
+app.get("/import-text/:id", (req, res) => {
+  let baseUrl = "https://mirrors.xmission.com/gutenberg/";
   //id will be a string
-  let id = "12345";
+  let id = req.params.id;
   let idLength = id.length;
 
   if (idLength === 1) {
@@ -39,10 +39,10 @@ app.get("/import-text", (req, res) => {
   }).then((response) => {
     console.log("Received response:", response);
 
-    res.json({"text": response.data});
+    res.send(response.data);
   }).catch(error => {
     console.log(error);
-    res.status(500).json({});
+    res.status(500).send();
   })
 });
 
