@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Manicule – live demo</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+</head>
+<body>
+  <h1>Room: <span id="room"></span></h1>
+  <ul id="messages"></ul>
+  <form id="form">
+    <input id="input" autocomplete="off" placeholder="Say something">
+    <button>Send</button>
+  </form>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const room = new URLSearchParams(location.search).get("room") || "a";
+    document.getElementById("room").textContent = room;
+
+    const socket = io();
+    socket.emit("join", room);
+
+    document.getElementById("form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const input = document.getElementById("input");
+      if (input.value) socket.emit("message", input.value);
+      input.value = "";
+    });
+
+    socket.on("message", (msg) => {
+      const li = document.createElement("li");
+      li.textContent = msg;
+      document.getElementById("messages").appendChild(li);
+    });
+  </script>
+</body>
+</html>
