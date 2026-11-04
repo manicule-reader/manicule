@@ -1,10 +1,12 @@
+require("dotenv").config();
+const path = require("path");
 const express = require("express");
 const app = express();
-app.use(express.static("public"));
 
-let port = 3000;
-let hostname = "localhost";
+app.use(express.static(path.join(__dirname, "public")));
 
-app.listen(port, hostname, () => {
-  console.log(`Listening at: http://${hostname}:${port}`);
+const port = process.env.PORT || 3000;
+
+app.listen(port, () => {
+  console.log(`Listening at: http://localhost:${port}`);
 });
