@@ -31,6 +31,33 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/api/auth", authRoutes);
 
+app.get("/api/books/:id", async (req, res) => {
+  try {
+    const book = await pool.query(
+      "SELECT id, title, author FROM books WHERE id = $1",
+      [req.params.id]
+    );
+    if (book.rows.length === 0) {
+      return res.status(404).json({ error: "Book not found" });
+    }
+
+    const passages = await pool.query(
+      "SELECT id, seq, body FROM passages WHERE book_id = $1 ORDER BY seq",
+      [req.params.id]
+    );
+
+    res.json({ ...book.rows[0], passages: passages.rows });
+  } catch (error) {
+    console.error("Book fetch error:", error);
+    res.status(500).json({ error: "Unable to load book" });
+  }
+});
+
+app.get("/read/:id", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "reader.html"));
+});
+
+
 const port = process.env.PORT || 3000;
 
 app.listen(port, () => {
