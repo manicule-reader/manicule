@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 const pool = require("../db/pool");
 
 const router = express.Router();
+const requireAuth = require("../middleware/auth");
 
 router.post("/register", async (req, res) => {
   const { username, email, password } = req.body;
@@ -94,4 +95,49 @@ router.post("/login", async (req, res) => {
     }
   });
 
+  router.get("/me", requireAuth, async (req, res) => {
+    try {
+      const result = await pool.query(
+        `SELECT id, username, email, created_at
+         FROM users
+         WHERE id = $1`,
+        [req.session.userId]
+      );
+  
+      if (result.rows.length === 0) {
+        return res.status(404).json({
+          error: "User not found",
+        });
+      }
+  
+      return res.status(200).json({
+        user: result.rows[0],
+      });
+    } catch (error) {
+      console.error("Current user error:", error);
+  
+      return res.status(500).json({
+        error: "Unable to retrieve user",
+      });
+    }
+  });
+
+  router.post("/logout", requireAuth, (req, res) => {
+    req.session.destroy((error) => {
+      if (error) {
+        console.error("Logout error:", error);
+  
+        return res.status(500).json({
+          error: "Unable to log out",
+        });
+      }
+  
+      res.clearCookie("connect.sid");
+  
+      return res.status(200).json({
+        message: "Logged out successfully",
+      });
+    });
+  });
+  
 module.exports = router;
