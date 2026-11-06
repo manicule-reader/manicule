@@ -23,3 +23,22 @@ body {
 button, input, textarea, select {
   font-family: inherit;
 }
+
+#text {
+  max-width: 38em;
+  line-height: 1.65;
+}
+
+.passage {
+  position: relative;
+}
+
+.passage::before {
+  content: attr(data-seq);
+  position: absolute;
+  left: -3em;
+  width: 2em;
+  text-align: right;
+  font-size: 0.75em;
+  color: var(--text-muted);
+}
