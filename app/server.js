@@ -8,6 +8,9 @@ const authRoutes = require("./routes/auth");
 
 const app = express();
 
+// trust render
+app.set("trust proxy", 1);
+
 app.use(
   session({
     store: new pgSession({
