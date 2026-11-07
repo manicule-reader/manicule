@@ -42,3 +42,12 @@ button, input, textarea, select {
   font-size: 0.75em;
   color: var(--text-muted);
 }
+
+.chapter-nav {
+  display: flex;
+  gap: 2em;
+  max-width: 38em;
+  margin-top: 2em;
+  padding-top: 1em;
+  border-top: 1px solid var(--border);
+}
