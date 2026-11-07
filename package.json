@@ -1,7 +1,9 @@
 {
   "name": "manicule",
   "scripts": {
-    "start": "node app/server.js"
+    "start": "node app/server.js",
+    "db:schema": "psql $DATABASE_URL -f app/db/schema.sql",
+    "db:sample": "psql $DATABASE_URL -f app/db/sample.sql"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
@@ -10,5 +12,6 @@
     "express": "^4.22.3",
     "express-session": "^1.19.0",
     "pg": "^8.23.1"
-  }
+  },
+  "engines": { "node": ">=22" }
 }
