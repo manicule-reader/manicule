@@ -57,9 +57,17 @@ async function showSection() {
     el.className = "passage";
     el.dataset.pid = p.id;
     el.dataset.seq = p.seq;
-    el.textContent = p.body;
+    el.id = `p${p.seq}`;
+    const label = link(`#p${p.seq}`, p.seq);
+    label.className = "plabel";
+    const body = document.createElement("span");
+    body.className = "pbody";
+    body.textContent = p.body;
+    el.append(label, body);
     $("#text").append(el);
   }
+  
+  document.getElementById(location.hash.slice(1))?.scrollIntoView();
 
   renderNav(data);
 }

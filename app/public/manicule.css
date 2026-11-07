@@ -33,14 +33,18 @@ button, input, textarea, select {
   position: relative;
 }
 
-.passage::before {
-  content: attr(data-seq);
+.plabel {
   position: absolute;
   left: -3em;
   width: 2em;
   text-align: right;
   font-size: 0.75em;
   color: var(--text-muted);
+  text-decoration: none;
+}
+
+.plabel:hover {
+  color: var(--links);
 }
 
 .chapter-nav {
