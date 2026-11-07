@@ -22,7 +22,6 @@ CREATE TABLE IF NOT EXISTS books (
 CREATE TABLE IF NOT EXISTS sections (
     id SERIAL PRIMARY KEY,
     book_id INTEGER NOT NULL REFERENCES books(id) ON DELETE CASCADE,
-    section_id INTEGER REFERENCES sections(id) ON DELETE CASCADE,
     seq INTEGER NOT NULL,
     title TEXT,
     UNIQUE (book_id, seq)
@@ -31,6 +30,7 @@ CREATE TABLE IF NOT EXISTS sections (
 CREATE TABLE IF NOT EXISTS passages (
     id SERIAL PRIMARY KEY,
     book_id INTEGER NOT NULL REFERENCES books(id) ON DELETE CASCADE,
+    section_id INTEGER REFERENCES sections(id) ON DELETE CASCADE,
     seq INTEGER NOT NULL,
     body TEXT NOT NULL,
     UNIQUE (book_id, seq)
