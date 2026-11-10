@@ -1,15 +1,15 @@
-//grab the contact email from the .env and end early if it's not there
-let envFile = require("../.env.json");
-let contact = envFile["gutenberg_contact"];
-if (!contact) {
-    console.log("Set gutenberg_contact in .env.json");
-    process.exit(1);
-}
-
 let axios = require("axios");
 let zlib = require("zlib");
 let fs = require("fs");
 let path = require("path");
+require("dotenv").config();
+
+//grab the contact email from the .env and end early if it's not there
+const contact = process.env.gutenberg_contact;
+if (!contact) {
+    console.log("Set gutenberg_contact in .env.json");
+    process.exit(1);
+}
 
 let url = "https://www.gutenberg.org/cache/epub/feeds/pg_catalog.csv.gz";
 let cachePath = path.join(__dirname, ".cache/pg_catalog.csv.gz");
