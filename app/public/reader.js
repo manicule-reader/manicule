@@ -20,9 +20,9 @@ function notFound() {
 
 function renderNav(data) {
   const nav = $(".chapter-nav");
-  if (data.prev) nav.append(link(`/read/${bookId}/${data.prev}`, "« prev"));
+  if (data.prev != null) nav.append(link(`/read/${bookId}/${data.prev}`, "« prev"));
   nav.append(link(`/read/${bookId}`, "contents"));
-  if (data.next) nav.append(link(`/read/${bookId}/${data.next}`, "next »"));
+  if (data.next != null) nav.append(link(`/read/${bookId}/${data.next}`, "next »"));
 }
 
 async function showContents() {
