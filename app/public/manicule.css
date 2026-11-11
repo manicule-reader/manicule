@@ -1,0 +1,57 @@
+:root {
+  --background-body: #f3ead9;
+  --background: #ebe0c9;
+  --background-alt: #e3d5ba;
+  --text-main: #2b2118;
+  --text-bright: #1a130d;
+  --text-muted: #6b5d4f;
+  --links: #7a3b1d;
+  --focus: #7a3b1d55;
+  --border: #b8a88f;
+  --button-base: #e3d5ba;
+  --button-hover: #d8c7a6;
+  --form-text: #2b2118;
+  --form-placeholder: #8a7b6a;
+  --selection: #f2e27d;
+}
+
+body {
+  font-family: "Times New Roman", Times, serif;
+  font-size: 18px;
+}
+
+button, input, textarea, select {
+  font-family: inherit;
+}
+
+#text {
+  max-width: 38em;
+  line-height: 1.65;
+}
+
+.passage {
+  position: relative;
+}
+
+.plabel {
+  position: absolute;
+  left: -3em;
+  width: 2em;
+  text-align: right;
+  font-size: 0.75em;
+  color: var(--text-muted);
+  text-decoration: none;
+}
+
+.plabel:hover {
+  color: var(--links);
+}
+
+.chapter-nav {
+  display: flex;
+  gap: 2em;
+  max-width: 38em;
+  margin-top: 2em;
+  padding-top: 1em;
+  border-top: 1px solid var(--border);
+}
