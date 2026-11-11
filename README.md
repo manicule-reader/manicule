@@ -53,6 +53,13 @@ psql "postgresql://localhost:5432/manicule" -f app/db/sample.sql
 ```
  
 Use the same URL as your `.env`. Both files are safe to rerun. `sample.sql` wipes book data and reloads it.
+
+The sample data includes two development accounts:
+
+- `sampleuser1` / `password123`
+- `sampleuser2` / `password123`
+
+These accounts are for local development and testing only.
  
 Also set `SESSION_SECRET` in `.env` to any long random string.
  
