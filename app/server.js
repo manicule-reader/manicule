@@ -13,7 +13,7 @@ app.use(express.static("public"));
 let port = 3000;
 let hostname = "localhost";
 
-app.get("/import-text/:id", (req, res) => {
+app.get("/import-text/:id", async (req, res) => {
   let baseUrl = "https://mirrors.xmission.com/gutenberg/";
   //id will be a string
   let id = req.params.id;
@@ -28,22 +28,36 @@ app.get("/import-text/:id", (req, res) => {
   }
   baseUrl += `${id}/`;
 
-  let url = baseUrl + `${id}-0.txt`;
+  //filenames to try in order, gutenberg isn't consistent about these
+  const filenames = [`${id}-0.txt`, `${id}.txt`, `${id}-8.txt`];
 
-  console.log(url);
+  for (const filename of filenames) {
+    const url = baseUrl + filename;
+    console.log(url);
 
-  axios.get(url, {
-    headers: {
-      "User-Agent": "manicule-testing (" + contact + ")"
-    },
-  }).then((response) => {
-    console.log("Received response:", response);
+    try {
+      const response = await axios.get(url, {
+        headers: {
+          "User-Agent": "manicule-testing (" + contact + ")"
+        },
+      });
 
-    res.send(response.data);
-  }).catch(error => {
-    console.log(error);
-    res.status(500).send();
-  })
+      console.log("Received response:", response.status);
+      return res.send(response.data);
+    } catch (error) {
+      //only keep trying if the file wasn't found
+      if (error.response && error.response.status === 404) {
+        console.log(`404 for ${filename}, trying next`);
+        continue;
+      }
+
+      console.log(error);
+      return res.status(500).send();
+    }
+  }
+
+  //every candidate 404'd
+  res.status(404).send();
 });
 
 app.listen(port, hostname, () => {
