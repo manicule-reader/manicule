@@ -12,12 +12,34 @@ CREATE TABLE IF NOT EXISTS session (
     expire TIMESTAMP(6) NOT NULL
 );
 
-CREATE INDEX IF NOT EXISTS IDX_session_expire ON session (expire);
+CREATE TABLE IF NOT EXISTS books (
+    id SERIAL PRIMARY KEY,
+    gutenberg_id INTEGER UNIQUE,
+    title TEXT NOT NULL,
+    author TEXT
+);
+
+CREATE TABLE IF NOT EXISTS sections (
+    id SERIAL PRIMARY KEY,
+    book_id INTEGER NOT NULL REFERENCES books(id) ON DELETE CASCADE,
+    seq INTEGER NOT NULL,
+    title TEXT,
+    UNIQUE (book_id, seq)
+);
+
+CREATE TABLE IF NOT EXISTS passages (
+    id SERIAL PRIMARY KEY,
+    book_id INTEGER NOT NULL REFERENCES books(id) ON DELETE CASCADE,
+    section_id INTEGER NOT NULL REFERENCES sections(id) ON DELETE CASCADE,
+    seq INTEGER NOT NULL,
+    body TEXT NOT NULL,
+    UNIQUE (book_id, seq)
+);
 
 CREATE TABLE IF NOT EXISTS groups (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    book_id INTEGER,
+    book_id INTEGER REFERENCES books(id),
     invite_code VARCHAR(64) UNIQUE NOT NULL,
     owner_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -28,3 +50,23 @@ CREATE TABLE IF NOT EXISTS group_members (
     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     PRIMARY KEY (group_id, user_id)
 );
+
+CREATE TABLE IF NOT EXISTS threads (
+    id SERIAL PRIMARY KEY,
+    passage_id INTEGER NOT NULL REFERENCES passages(id) ON DELETE CASCADE,
+    start_offset INTEGER NOT NULL,
+    end_offset INTEGER NOT NULL,
+    created_by INTEGER REFERENCES users(id),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CHECK (start_offset >= 0 AND end_offset > start_offset)
+);
+
+CREATE TABLE IF NOT EXISTS comments (
+    id SERIAL PRIMARY KEY,
+    thread_id INTEGER NOT NULL REFERENCES threads(id) ON DELETE CASCADE,
+    user_id INTEGER REFERENCES users(id),
+    body TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS IDX_session_expire ON session (expire);
