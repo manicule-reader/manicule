@@ -1,10 +1,3 @@
-// let envFile = require("../.env.json");
-// let contact = envFile["gutenberg_contact"];
-// if (!contact) {
-//     console.log("Set gutenberg_contact in .env.json");
-//     process.exit(1);
-// }
-
 require("dotenv").config();
 const session = require("express-session");
 const pgSession = require("connect-pg-simple")(session);
@@ -13,6 +6,7 @@ const path = require("path");
 const express = require("express");
 const axios = require("axios");
 const authRoutes = require("./routes/auth");
+const textRoutes = require("./routes/texts");
 
 const app = express();
 
@@ -47,6 +41,7 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/api/auth", authRoutes);
+app.use("/api/texts", textRoutes);
 
 // Book info + table of contents
 app.get("/api/books/:id", async (req, res) => {
@@ -114,54 +109,6 @@ app.get("/api/books/:id/sections/:seq", async (req, res) => {
 
 app.get(["/read/:id", "/read/:id/:section"], (req, res) => {
   res.sendFile(path.join(__dirname, "public", "reader.html"));
-});
-
-
-app.get("/import-text/:id", async (req, res) => {
-  let baseUrl = "https://mirrors.xmission.com/gutenberg/";
-  //id will be a string
-  let id = req.params.id;
-  let idLength = id.length;
-
-  if (idLength === 1) {
-    baseUrl += "0";
-  }
-
-  for (let i=0; i<idLength-1; i++) {
-    baseUrl += `${id.charAt(i)}/`;
-  }
-  baseUrl += `${id}/`;
-
-  //filenames to try in order, gutenberg isn't consistent about these
-  const filenames = [`${id}-0.txt`, `${id}.txt`, `${id}-8.txt`];
-
-  for (const filename of filenames) {
-    const url = baseUrl + filename;
-    console.log(url);
-
-    try {
-      const response = await axios.get(url, {
-        headers: {
-          "User-Agent": "manicule-testing (" + contact + ")"
-        },
-      });
-
-      console.log("Received response:", response.status);
-      return res.send(response.data);
-    } catch (error) {
-      //only keep trying if the file wasn't found
-      if (error.response && error.response.status === 404) {
-        console.log(`404 for ${filename}, trying next`);
-        continue;
-      }
-
-      console.log(error);
-      return res.status(500).send();
-    }
-  }
-
-  //every candidate 404'd
-  res.status(404).send();
 });
 
 const port = process.env.PORT || 3000;
