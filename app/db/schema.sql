@@ -36,8 +36,24 @@ CREATE TABLE IF NOT EXISTS passages (
     UNIQUE (book_id, seq)
 );
 
+CREATE TABLE IF NOT EXISTS groups (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    book_id INTEGER NOT NULL REFERENCES books(id),
+    invite_code VARCHAR(64) UNIQUE NOT NULL,
+    owner_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS group_members (
+    group_id INTEGER NOT NULL REFERENCES groups(id) ON DELETE CASCADE,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    PRIMARY KEY (group_id, user_id)
+);
+
 CREATE TABLE IF NOT EXISTS threads (
     id SERIAL PRIMARY KEY,
+    group_id INTEGER NOT NULL REFERENCES groups(id) ON DELETE CASCADE,
     passage_id INTEGER NOT NULL REFERENCES passages(id) ON DELETE CASCADE,
     start_offset INTEGER NOT NULL,
     end_offset INTEGER NOT NULL,
@@ -53,6 +69,5 @@ CREATE TABLE IF NOT EXISTS comments (
     body TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-
 
 CREATE INDEX IF NOT EXISTS IDX_session_expire ON session (expire);
