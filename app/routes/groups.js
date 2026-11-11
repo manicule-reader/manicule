@@ -62,4 +62,32 @@ router.post("/", requireAuth, async (req, res) => {
   }
 });
 
+router.get("/", requireAuth, async (req, res) => {
+    try {
+      const result = await pool.query(
+        `SELECT
+           g.id,
+           g.name,
+           g.book_id,
+           g.owner_id,
+           g.created_at
+         FROM groups g
+         JOIN group_members gm ON g.id = gm.group_id
+         WHERE gm.user_id = $1
+         ORDER BY g.created_at DESC`,
+        [req.session.userId]
+      );
+  
+      return res.status(200).json({
+        groups: result.rows,
+      });
+    } catch (error) {
+      console.error("Get groups error:", error);
+  
+      return res.status(500).json({
+        error: "Unable to retrieve groups",
+      });
+    }
+  });
+  
 module.exports = router;
