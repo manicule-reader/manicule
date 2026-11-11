@@ -53,6 +53,7 @@ CREATE TABLE IF NOT EXISTS group_members (
 
 CREATE TABLE IF NOT EXISTS threads (
     id SERIAL PRIMARY KEY,
+    group_id INTEGER NOT NULL REFERENCES groups(id) ON DELETE CASCADE,
     passage_id INTEGER NOT NULL REFERENCES passages(id) ON DELETE CASCADE,
     start_offset INTEGER NOT NULL,
     end_offset INTEGER NOT NULL,
