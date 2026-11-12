@@ -69,7 +69,7 @@ form.addEventListener("submit", async (event) => {
       return;
     }
 
-    if (next && next.startsWith("/")) {
+    if (next && next.startsWith("/") && !next.startsWith("//")) {
       window.location.href = next;
     } else {
       window.location.href = "/groups";
