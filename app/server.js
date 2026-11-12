@@ -100,6 +100,10 @@ app.get("/api/books/:id/sections/:seq", async (req, res) => {
   }
 });
 
+app.get("/login", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "auth.html"));
+});
+
 app.get(["/read/:id", "/read/:id/:section"], (req, res) => {
   res.sendFile(path.join(__dirname, "public", "reader.html"));
 });
