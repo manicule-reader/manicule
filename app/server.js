@@ -38,17 +38,21 @@ app.use("/api/groups", groupRoutes);
 
 // Book info + table of contents
 app.get("/api/books/:id", async (req, res) => {
+  const id = Number(req.params.id);
+  if (!Number.isInteger(id)) {
+    return res.status(400).json({ error: "Invalid book" });
+  }
   try {
     const book = await pool.query(
       "SELECT id, title, author FROM books WHERE id = $1",
-      [req.params.id]
+      [id]
     );
     if (book.rows.length === 0) {
       return res.status(404).json({ error: "Book not found" });
     }
     const sections = await pool.query(
       "SELECT seq, title FROM sections WHERE book_id = $1 ORDER BY seq",
-      [req.params.id]
+      [id]
     );
     res.json({ ...book.rows[0], sections: sections.rows });
   } catch (error) {
