@@ -1,4 +1,8 @@
 // "/read/1/2".split("/") changed to ["", "read", "1", "2"]
+
+// highlight test
+const bodies = new Map();
+
 const [, , bookId, sectionSeq] = location.pathname.split("/");
 const $ = (sel) => document.querySelector(sel);
 
@@ -53,6 +57,9 @@ async function showSection() {
   $("#section-title").textContent = data.section.title;
 
   for (const p of data.passages) {
+    // highlight test
+    bodies.set(p.id, p.body);
+    // ...
     const el = document.createElement("p");
     el.className = "passage";
     el.dataset.pid = p.id;
@@ -76,4 +83,41 @@ if (sectionSeq) {
   await showSection();
 } else {
   await showContents();
+}
+
+if (sectionSeq) {
+  document.addEventListener("mouseup", () => {
+    const sel = window.getSelection();
+    if (sel.isCollapsed) return;
+    const range = sel.getRangeAt(0);
+
+    const pbody = range.startContainer.parentElement?.closest(".pbody");
+    if (!pbody) return;
+
+    // if the selection runs past this paragraph trim it to the paragraph's end
+    let r = range;
+    if (!pbody.contains(range.endContainer)) {
+      r = range.cloneRange();
+      r.setEnd(pbody, pbody.childNodes.length);
+    }
+
+    // characters from start of par text to the selection start
+    const before = document.createRange();
+    before.setStart(pbody, 0);
+    before.setEnd(r.startContainer, r.startOffset);
+    const start = before.toString().length;
+    const end = start + r.toString().length;
+
+    // console.log({
+    //   passage_id: Number(pbody.parentElement.dataset.pid),
+    //   start_offset: start,
+    //   end_offset: end,
+    //   text: range.toString(),
+    // });
+
+    const pid = Number(pbody.parentElement.dataset.pid);
+    const fromBody = bodies.get(pid).slice(start, end);
+    const ok = fromBody === r.toString();
+    console.log(ok ? "✓" : "X", { pid, start, end, selected: r.toString(), fromBody });
+  });
 }
