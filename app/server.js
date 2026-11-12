@@ -6,6 +6,7 @@ const path = require("path");
 const express = require("express");
 const authRoutes = require("./routes/auth");
 const groupRoutes = require("./routes/groups");
+const requireAuth = require("./middleware/auth");
 
 const app = express();
 
@@ -102,6 +103,10 @@ app.get("/api/books/:id/sections/:seq", async (req, res) => {
 
 app.get("/login", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "auth.html"));
+});
+
+app.get("/groups", requireAuth, (req, res) => {
+  res.send("My Groups page coming soon.");
 });
 
 app.get(["/read/:id", "/read/:id/:section"], (req, res) => {
