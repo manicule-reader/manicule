@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Log in - Manicule</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/light.css">
+  <link rel="stylesheet" href="/manicule.css">
+</head>
+<body>
+    <main class="auth-page">
+        <h1>Manicule</h1>
+        <p>Read together, argue with the text.</p>
+        <section class="auth-card">
+            <h2 id="auth-title">Log in</h2>
+             <form id="auth-form">
+                <div id="username-field" hidden>
+                    <label for="username">Username</label>
+                    <input
+                    id="username"
+                    name="username"
+                    type="text"
+                    autocomplete="username"
+                    >
+                </div>
+                <label for="email">Email</label>
+                <input
+                id="email"
+                name="email"
+                type="email"
+                autocomplete="email"
+                required
+                >
+                <label for="password">Password</label>
+                <input
+                id="password"
+                name="password"
+                type="password"
+                autocomplete="current-password"
+                required
+                >
+                <button id="submit-button" type="submit">Log in</button>
+            </form>
+            <p id="auth-error" role="alert"></p>
+            <p>
+                <span id="toggle-prompt">Don't have an account?</span>
+                <button id="toggle-auth" type="button">Sign up</button>
+            </p>
+        </section>
+    </main>
+    <script src="/auth.js"></script>
+</body>
+</html>

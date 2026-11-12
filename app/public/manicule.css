@@ -55,3 +55,22 @@ button, input, textarea, select {
   padding-top: 1em;
   border-top: 1px solid var(--border);
 }
+
+.auth-page {
+  max-width: 32em;
+  margin: 4em auto;
+}
+
+.auth-card {
+  margin-top: 2em;
+}
+
+.auth-card input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+#auth-error {
+  color: #8b1e1e;
+  min-height: 1.5em;
+}

@@ -46,9 +46,10 @@ router.post("/register", async (req, res) => {
          RETURNING id, username, email, created_at`,
         [normalizedUsername, normalizedEmail, passwordHash]
       );
-  
+      const user = result.rows[0];
+      req.session.userId = user.id;
       return res.status(201).json({
-        user: result.rows[0],
+        user,
       });
     } catch (error) {
       if (error.code === "23505") {
