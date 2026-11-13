@@ -6,6 +6,7 @@ const path = require("path");
 const express = require("express");
 const authRoutes = require("./routes/auth");
 const groupRoutes = require("./routes/groups");
+const threadRoutes = require("./routes/threads");
 
 const app = express();
 
@@ -35,6 +36,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/groups", groupRoutes);
+app.use("/api/groups/:groupId", threadRoutes);
 
 // Book info + table of contents
 app.get("/api/books/:id", async (req, res) => {
