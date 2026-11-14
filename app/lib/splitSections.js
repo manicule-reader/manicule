@@ -70,7 +70,15 @@ function splitSections(raw) {
       current.passages.push(it.para);
     }
   }
-  return sections.filter(s => s.passages.length > 0);
+  const nonEmpty = sections.filter(s => s.passages.length > 0);
+
+  //section seq restarts at 1 per book, passage seq runs across the whole book
+  let passageSeq = 0;
+  return nonEmpty.map((s, i) => ({
+    seq: i + 1,
+    title: s.title,
+    passages: s.passages.map(body => ({ seq: ++passageSeq, body })),
+  }));
 }
 
 module.exports = { stripBoilerplate, splitSections };
