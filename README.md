@@ -69,4 +69,26 @@ Open http://localhost:3000/read/1
 - `role "username" does not exist`: your shell or `.env` still has the placeholder URL from `.env.example`.
 - `connection to server on socket ... failed`: Postgres isn't running. On Mac, `brew services start postgresql@17`.
 - `Cannot find module ...`: run `npm install`.
- 
+
+## Importing Gutenberg texts
+First, you need to pull the Gutenberg catalog to your local DB:
+
+1. In your top-level `.env`, set:
+```
+gutenberg_contact=someemail@random.com
+```
+This email would only ever be used if the script was performing in some weird way and a Gutenberg staff wanted to contact you about it.
+
+2.
+```
+node scripts/pull_gutenberg_catalog.js
+```
+This will pull the catalog and upload it to your local database IF you have the database URL in your `.env`.
+
+3. With the local server running:
+```
+curl http://localhost:3000/api/texts/[id]
+```
+where [id] is the Gutenberg ID of the text you wish to download. The catalog holds the list of these for reference.
+
+If all of those worked properly, the text should be downloaded to your local DB, and you will be able to view it from the reader.
