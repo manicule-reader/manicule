@@ -12,6 +12,14 @@ CREATE TABLE IF NOT EXISTS session (
     expire TIMESTAMP(6) NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS catalog (
+    gutenberg_id INTEGER UNIQUE PRIMARY KEY,
+    title TEXT NOT NULL,
+    author TEXT,
+    language TEXT,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE IF NOT EXISTS books (
     id SERIAL PRIMARY KEY,
     gutenberg_id INTEGER UNIQUE,
