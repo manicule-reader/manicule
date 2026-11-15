@@ -279,15 +279,48 @@ panel.className = "thread-panel";
 panel.hidden = true;
 document.body.append(panel);
 
+async function loadComments(threadId, container) {
+  container.textContent = "Loading…";
+  try {
+    const res = await fetch(`/api/groups/${groupId}/threads/${threadId}/comments`);
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      container.textContent = data.error ?? "Couldn't load comments";
+      return;
+    }
+    container.replaceChildren();
+    for (const c of data.comments) {
+      const item = document.createElement("div");
+      item.className = "comment";
+      const who = document.createElement("strong");
+      who.textContent = c.username ?? "someone";
+      const when = document.createElement("small");
+      when.textContent = " " + new Date(c.created_at).toLocaleString();
+      const text = document.createElement("p");
+      text.textContent = c.body;
+      item.append(who, when, text);
+      container.append(item);
+    }
+  } catch {
+    container.textContent = "Couldn't reach the server";
+  }
+}
+
 function openPanel(threadIds) {
   const close = document.createElement("button");
   close.textContent = "Close";
   close.addEventListener("click", closePanel);
+  panel.replaceChildren(close);
 
-  const info = document.createElement("p");
-  info.textContent = `Threads: ${threadIds.join(", ")}`;
-
-  panel.replaceChildren(close, info);
+  // one block per thread (more than one when highlights overlap)
+  for (const id of threadIds) {
+    const section = document.createElement("section");
+    section.className = "thread";
+    const list = document.createElement("div");
+    section.append(list);
+    panel.append(section);
+    loadComments(id, list);
+  }
   panel.hidden = false;
 }
 
