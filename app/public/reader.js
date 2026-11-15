@@ -231,36 +231,41 @@ function showCommentForm() {
   box.focus();
 }
 
-// Selection -> { passage_id, start_offset, end_offset }, or null if the
-// selection doesn't start inside a passage body.
+// Selection -> { passage_id, start_offset, end_offset, rect }, or null if the
+// selection doesn't start inside a passage
 function selectionToOffsets(sel) {
   if (sel.isCollapsed || sel.rangeCount === 0) return null;
   const range = sel.getRangeAt(0);
 
-  // (triple-click, drag starting at an edge)
+  // find the passage the selection starts in, even if it starts on the
+  // passage number or the browser reports an element instead of text
   const node = range.startContainer;
   const startEl = node.nodeType === Node.TEXT_NODE ? node.parentElement : node;
-  const pbody = startEl?.closest(".pbody");
+  const pbody = startEl?.closest(".passage")?.querySelector(".pbody");
   if (!pbody) return null;
 
-  // if the selection runs past this paragraph trim it to the paragraph's end
-  let r = range;
-  if (!pbody.contains(range.endContainer)) {
-    r = range.cloneRange();
-    r.setEnd(pbody, pbody.childNodes.length);
-  }
+  const r = range.cloneRange();
+  // started on the passage number: start at the beginning of the text
+  if (!pbody.contains(r.startContainer)) r.setStart(pbody, 0);
+  // ran past this paragraph: trim it to the paragraph's end
+  if (!pbody.contains(r.endContainer)) r.setEnd(pbody, pbody.childNodes.length);
 
   // characters from start of paragraph text to the selection start
-  // (counts straight through any <mark>s already in the paragraph)
   const before = document.createRange();
   before.setStart(pbody, 0);
   before.setEnd(r.startContainer, r.startOffset);
-  const start = before.toString().length;
-  const end = start + r.toString().length;
-  if (!r.toString().trim()) return null;
+  let start = before.toString().length;
+  let end = start + r.toString().length;
+
+  // don't highlight leading/trailing spaces (double-click often grabs one)
+  const pid = Number(pbody.parentElement.dataset.pid);
+  const text = bodies.get(pid);
+  while (start < end && /\s/.test(text[start])) start++;
+  while (end > start && /\s/.test(text[end - 1])) end--;
+  if (start >= end) return null;
 
   return {
-    passage_id: Number(pbody.parentElement.dataset.pid),
+    passage_id: pid,
     start_offset: start,
     end_offset: end,
     rect: r.getBoundingClientRect(),
