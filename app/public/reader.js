@@ -306,6 +306,46 @@ async function loadComments(threadId, container) {
   }
 }
 
+function replyForm(threadId, list) {
+  const form = document.createElement("form");
+  const box = document.createElement("textarea");
+  box.rows = 2;
+  box.placeholder = "Reply…";
+  box.required = true;
+  const send = document.createElement("button");
+  send.type = "submit";
+  send.textContent = "Reply";
+  const err = document.createElement("p");
+  err.className = "hl-error";
+  form.append(box, send, err);
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    send.disabled = true;
+    err.textContent = "";
+    try {
+      const res = await fetch(`/api/groups/${groupId}/threads/${threadId}/comments`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ body: box.value }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        err.textContent = data.error ?? "Couldn't post reply";
+        return;
+      }
+      box.value = "";
+      await loadComments(threadId, list);
+    } catch {
+      err.textContent = "Couldn't reach the server";
+    } finally {
+      send.disabled = false;
+    }
+  });
+
+  return form;
+}
+
 function openPanel(threadIds) {
   const close = document.createElement("button");
   close.textContent = "Close";
@@ -317,7 +357,7 @@ function openPanel(threadIds) {
     const section = document.createElement("section");
     section.className = "thread";
     const list = document.createElement("div");
-    section.append(list);
+    section.append(list, replyForm(id, list));
     panel.append(section);
     loadComments(id, list);
   }

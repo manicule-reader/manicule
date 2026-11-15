@@ -99,3 +99,4 @@ button, input, textarea, select {
   border-bottom: 1px solid var(--border);
 }
 .thread-panel .comment p { margin: 0.25em 0 0; white-space: pre-wrap; }
+.thread-panel textarea { width: 100%; box-sizing: border-box; }
