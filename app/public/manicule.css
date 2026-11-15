@@ -55,3 +55,22 @@ button, input, textarea, select {
   padding-top: 1em;
   border-top: 1px solid var(--border);
 }
+
+/* highlight things */
+.pbody mark.hl { background: #ecd98a; color: inherit; padding: 0; }
+.pbody mark.hl-overlap { background: #ddc25e; }
+
+/*  box that pops up under a selection */
+.hl-popover {
+  position: absolute;
+  z-index: 10;
+  max-width: 340px;
+  padding: 0.5em;
+  background: var(--background-body);
+  border: 1px solid var(--border);
+  box-shadow: 0 2px 6px #2b211833;
+}
+.hl-popover[hidden] { display: none; }
+.hl-popover textarea { width: 100%; box-sizing: border-box; }
+.hl-error { margin: 0.25em 0 0; font-size: 0.85em; color: #9b2c1c; }
+.hl-error:empty { display: none; }
