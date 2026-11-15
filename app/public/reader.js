@@ -272,6 +272,31 @@ function selectionToOffsets(sel) {
   };
 }
 
+// thread panel
+
+const panel = document.createElement("aside");
+panel.className = "thread-panel";
+panel.hidden = true;
+document.body.append(panel);
+
+function openPanel(threadIds) {
+  const close = document.createElement("button");
+  close.textContent = "Close";
+  close.addEventListener("click", closePanel);
+
+  const info = document.createElement("p");
+  info.textContent = `Threads: ${threadIds.join(", ")}`;
+
+  panel.replaceChildren(close, info);
+  panel.hidden = false;
+}
+
+function closePanel() {
+  panel.hidden = true;
+  panel.replaceChildren();
+}
+
+
 if (sectionSeq) {
   await showSection();
 
@@ -288,8 +313,19 @@ if (sectionSeq) {
       });
     });
 
+    document.addEventListener("click", (e) => {
+    const mark = e.target.closest("mark.hl");
+    if (!mark) return;
+    // ignore the click that ends a drag-selection
+    if (!window.getSelection().isCollapsed) return;
+    openPanel(mark.dataset.threads.split(",").map(Number));
+    });
+
     document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") hidePopover();
+    if (e.key === "Escape") {
+      hidePopover();
+      closePanel();
+    }
     });
   }
 } else {
