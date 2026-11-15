@@ -40,7 +40,7 @@ router.post("/threads", guard, async (req, res) => {
   try {
     // passage must belong to this group's book and also need its length
     const passage = await client.query(
-      `SELECT char_length(p.body) AS len
+      `SELECT p.body
        FROM passages p
        JOIN groups g ON g.book_id = p.book_id
        WHERE p.id = $1 AND g.id = $2`,
@@ -50,7 +50,7 @@ router.post("/threads", guard, async (req, res) => {
       return res.status(404).json({ error: "Passage not found in this group's book" });
     }
 
-    if (end_offset > passage.rows[0].len) {
+    if (end_offset > passage.rows[0].body.length) {
       return res.status(400).json({ error: "Range is outside the passage" });
     }
 
