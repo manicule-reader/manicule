@@ -199,12 +199,19 @@ function showCommentForm() {
     save.disabled = true;
     err.textContent = "";
 
-    const res = await fetch(`/api/groups/${groupId}/threads`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...pending, body: box.value }),
-    });
-    const json = await res.json().catch(() => ({}));
+    let res, json;
+    try {
+      res = await fetch(`/api/groups/${groupId}/threads`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...pending, body: box.value }),
+      });
+      json = await res.json().catch(() => ({}));
+    } catch {
+      err.textContent = "Couldn't reach the server";
+      save.disabled = false;
+      return;
+    }
 
     if (!res.ok) {
       err.textContent = json.error ?? "Could not save comment";
