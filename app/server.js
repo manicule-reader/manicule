@@ -34,10 +34,18 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/api/auth", authRoutes);
 
+// Strict id parsing for digits only 
+const MAX_INT4 = 2147483647;
+function parseId(s) {
+  if (!/^\d+$/.test(s)) return null;
+  const n = Number(s);
+  return n <= MAX_INT4 ? n : null;
+}
+
 // Book info + table of contents
 app.get("/api/books/:id", async (req, res) => {
-  const id = Number(req.params.id);
-  if (!Number.isInteger(id)) {
+  const id = parseId(req.params.id);
+  if (id === null) {
     return res.status(400).json({ error: "Invalid book" });
   }
   try {
@@ -61,9 +69,9 @@ app.get("/api/books/:id", async (req, res) => {
 
 // one sections passages + prev/next
 app.get("/api/books/:id/sections/:seq", async (req, res) => {
-  const id = Number(req.params.id);
-  const seq = Number(req.params.seq);
-  if (!Number.isInteger(id) || !Number.isInteger(seq)) {
+  const id = parseId(req.params.id);
+  const seq = parseId(req.params.seq);
+  if (id === null || seq === null) {
     return res.status(400).json({ error: "Invalid book or section" });
   }
   try {
