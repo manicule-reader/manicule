@@ -14,10 +14,10 @@ async function findBook(id) {
 
 //returns the text, or null if it doesn't exist
 async function getText(id) {
-  //later: check the db first and return early if we already have it
+  //check the db first and return early if we already have it
   let inDB = await findBook(id);
   if (inDB) {
-    return null;
+    return;
   }
 
   return importText(id);
@@ -33,8 +33,13 @@ async function importText(id) {
   if (raw === null) return null;
 
   const sections = splitSections(raw);
-  if (sections.length === 0) return null;
 
+  //no headings were found, so the whole text is one section named after the book
+  if (sections.length === 1 && sections[0].title === 'Front Matter') {
+    sections[0].title = meta.title;
+  }
+
+  //will throw if the sections are not as expected
   checkSections(sections);
 
   await saveBook({
@@ -51,18 +56,15 @@ class UnsupportedFormatError extends Error {}
 
 function checkSections(sections) {
   if (sections.length === 0) {
+    console.log("1");
     throw new UnsupportedFormatError('no sections found');
   }
-
-  //no headings matched, so everything landed in front matter (poems, collections, odd layouts)
-  if (sections.length === 1 && sections[0].title === 'Front Matter') {
-    throw new UnsupportedFormatError('no chapter headings found');
-  }
-
+  
   const total = sections.reduce((n, s) => n + s.passages.length, 0);
 
   //front matter should be a small slice of the book, not most of it
   if (sections[0].title === 'Front Matter' && sections[0].passages.length > total / 2) {
+    console.log("2");
     throw new UnsupportedFormatError('most of the text is before the first heading');
   }
 }
