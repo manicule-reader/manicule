@@ -7,14 +7,14 @@ const express = require("express");
 const authRoutes = require("./routes/auth");
 const groupRoutes = require("./routes/groups");
 const threadRoutes = require("./routes/threads");
-
+const http = require("http");
+const setupLive = require("./live");
 const app = express();
 
 // trust render
 app.set("trust proxy", 1);
 
-app.use(
-  session({
+const sessionMiddleware = session({
     store: new pgSession({
       pool: pool,
       tableName: "session",
@@ -28,8 +28,9 @@ app.use(
       secure: process.env.NODE_ENV === "production",
       maxAge: 1000 * 60 * 60 * 24 * 7,
     },
-  })
-);
+  });
+
+app.use(sessionMiddleware);
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
@@ -109,6 +110,12 @@ app.get(["/read/:id", "/read/:id/:section"], (req, res) => {
 
 const port = process.env.PORT || 3000;
 
-app.listen(port, () => {
+// socket.io needs the raw http server, not just the express app
+const server = http.createServer(app);
+const io = setupLive(server, sessionMiddleware);
+// routes reach it with req.app.get("io")
+app.set("io", io);
+
+server.listen(port, () => {
   console.log(`Listening at: http://localhost:${port}`);
 });
