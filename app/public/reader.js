@@ -279,6 +279,23 @@ panel.className = "thread-panel";
 panel.hidden = true;
 document.body.append(panel);
 
+const openLists = new Map();
+
+function commentEl(c) {
+  const item = document.createElement("div");
+  item.className = "comment";
+  item.dataset.cid = c.id;
+  const who = document.createElement("strong");
+  who.textContent = c.username ?? "someone";
+  const when = document.createElement("small");
+  when.textContent = " " + new Date(c.created_at).toLocaleString();
+  const text = document.createElement("p");
+  text.textContent = c.body;
+  item.append(who, when, text);
+  return item;
+}
+
+
 async function loadComments(threadId, container) {
   container.textContent = "Loading…";
   try {
@@ -288,19 +305,7 @@ async function loadComments(threadId, container) {
       container.textContent = data.error ?? "Couldn't load comments";
       return;
     }
-    container.replaceChildren();
-    for (const c of data.comments) {
-      const item = document.createElement("div");
-      item.className = "comment";
-      const who = document.createElement("strong");
-      who.textContent = c.username ?? "someone";
-      const when = document.createElement("small");
-      when.textContent = " " + new Date(c.created_at).toLocaleString();
-      const text = document.createElement("p");
-      text.textContent = c.body;
-      item.append(who, when, text);
-      container.append(item);
-    }
+    container.replaceChildren(...data.comments.map(commentEl));
   } catch {
     container.textContent = "Couldn't reach the server";
   }
@@ -347,6 +352,7 @@ function replyForm(threadId, list) {
 }
 
 function openPanel(threadIds) {
+  openLists.clear();
   const close = document.createElement("button");
   close.textContent = "Close";
   close.addEventListener("click", closePanel);
@@ -357,6 +363,7 @@ function openPanel(threadIds) {
     const section = document.createElement("section");
     section.className = "thread";
     const list = document.createElement("div");
+    openLists.set(id, list);
     section.append(list, replyForm(id, list));
     panel.append(section);
     loadComments(id, list);
@@ -365,6 +372,7 @@ function openPanel(threadIds) {
 }
 
 function closePanel() {
+  openLists.clear();
   panel.hidden = true;
   panel.replaceChildren();
 }
@@ -383,6 +391,14 @@ function connectLive() {
 
   socket.on("connect_error", (err) => {
     console.warn("live: couldn't connect:", err.message);
+  });
+
+  // someone replied and if that thread is open in the panel add it
+  socket.on("comment:new", (c) => {
+    const list = openLists.get(c.thread_id);
+    if (!list) return;
+    if (list.querySelector(`[data-cid="${c.id}"]`)) return;
+    list.append(commentEl(c));
   });
 
 
