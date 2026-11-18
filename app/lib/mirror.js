@@ -7,9 +7,10 @@ if (!contact) {
 
 const BASE = "https://mirrors.xmission.com/gutenberg/";
 
-//pure function, easy to test
+//constructs the proper URL for the given text id
 function bookDirUrl(id) {
   let url = BASE;
+  //texts of id length 1 are prepended with a 0
   if (id.length === 1) {
     url += "0/";
   }
@@ -22,7 +23,7 @@ function bookDirUrl(id) {
 //returns the raw text, or null if every candidate 404s. throws on anything else
 async function fetchFromMirror(id) {
   const dir = bookDirUrl(id);
-  //gutenberg isn't consistent about filenames
+  //gutenberg isn't consistent about filenames, try a couple
   const filenames = [`${id}-0.txt`, `${id}.txt`, `${id}-8.txt`];
 
   for (const filename of filenames) {

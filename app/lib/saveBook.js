@@ -4,7 +4,6 @@ const pool = require("../db/pool");
 //sections is the numbered output of splitSections: [{ seq, title, passages: [{ seq, body }] }]
 //returns the new book id, or null if the book was already in the db
 async function saveBook({ gutenbergId, title, author, sections }) {
-//   const pool = await pool.connect();
   try {
     await pool.query('BEGIN');
 

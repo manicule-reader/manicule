@@ -17,14 +17,13 @@ async function getText(id) {
   //later: check the db first and return early if we already have it
   let inDB = await findBook(id);
   if (inDB) {
-    //load the already-downloaded rows from the db
-    console.log('already got it');
     return null;
   }
 
   return importText(id);
 }
 
+//orchestrator of the entire "importing a text" process if we don't already have it
 async function importText(id) {
   //title and author come from the catalog, not the text
   const meta = await getCatalogEntry(id);

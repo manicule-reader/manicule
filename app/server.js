@@ -14,12 +14,6 @@ const app = express();
 // trust render
 app.set("trust proxy", 1);
 
-const contact = process.env.gutenberg_contact;
-if (!contact) {
-  console.log("Set gutenberg_contact in .env.json");
-  process.exit(1);
-}
-
 app.use(
   session({
     store: new pgSession({
