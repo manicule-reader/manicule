@@ -69,6 +69,10 @@ router.post("/threads", guard, async (req, res) => {
     );
     await client.query("COMMIT");
 
+    req.app.get("io").to(`group:${groupId}`).emit("thread:new", {
+      thread: thread.rows[0],
+    });
+
     return res.status(201).json({
       thread: thread.rows[0],
       comment: comment.rows[0],
@@ -157,10 +161,13 @@ router.post("/threads/:threadId/comments", guard, async (req, res) => {
   try {
     // insert only if the thread is in this group
     const result = await pool.query(
-      `INSERT INTO comments (thread_id, user_id, body)
-       SELECT t.id, $3, $4 FROM threads t
-       WHERE t.id = $1 AND t.group_id = $2
-       RETURNING id, thread_id, user_id, body, created_at`,
+      `WITH c AS (
+        INSERT INTO comments (thread_id, user_id, body)
+        SELECT t.id, $3, $4 FROM threads t
+        WHERE t.id = $1 AND t.group_id = $2
+        RETURNING id, thread_id, user_id, body, created_at
+      )
+      SELECT c.*, u.username FROM c LEFT JOIN users u ON u.id = c.user_id`,
       [threadId, groupId, req.session.userId, body]
     );
     //  t.group_id = $2 check stops a member of group A reading group B's threads by guessing ids
@@ -168,7 +175,9 @@ router.post("/threads/:threadId/comments", guard, async (req, res) => {
     if (result.rows.length === 0) {
       return res.status(404).json({ error: "Thread not found" });
     }
-    return res.status(201).json({ comment: result.rows[0] });
+    const comment = result.rows[0];
+    req.app.get("io").to(`group:${groupId}`).emit("comment:new", comment);
+    return res.status(201).json({ comment });
   } catch (error) {
     console.error("Reply error:", error);
     return res.status(500).json({ error: "Unable to post comment" });
