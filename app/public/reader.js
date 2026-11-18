@@ -369,11 +369,31 @@ function closePanel() {
   panel.replaceChildren();
 }
 
+// live update
+
+function connectLive() {
+  const socket = io();
+
+  socket.on("connect", () => {
+    socket.emit("join-group", groupId, (res) => {
+      if (res.ok) console.log("live: joined group", groupId);
+      else console.warn("live:", res.error);
+    });
+  });
+
+  socket.on("connect_error", (err) => {
+    console.warn("live: couldn't connect:", err.message);
+  });
+
+  return socket;
+}
+
 
 if (sectionSeq) {
   await showSection();
 
   if (groupId) {
+    connectLive();
     document.addEventListener("mouseup", (e) => {
       if (popover.contains(e.target)) return;
       // let browser finish updating the selection
