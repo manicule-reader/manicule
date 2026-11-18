@@ -98,6 +98,15 @@ function renderBody(pid) {
   }
 }
 
+// add one new thread and redraw its passage
+function addThread(t) {
+  if (!threadsByPassage.has(t.passage_id)) threadsByPassage.set(t.passage_id, []);
+  const list = threadsByPassage.get(t.passage_id);
+  if (list.some((x) => x.id === t.id)) return;
+  list.push(t);
+  renderBody(t.passage_id);
+}
+
 async function loadThreads() {
   if (!groupId) return;
   const res = await fetch(`/api/groups/${groupId}/sections/${sectionSeq}/threads`);
@@ -219,10 +228,7 @@ function showCommentForm() {
       return;
     }
 
-    const t = json.thread;
-    if (!threadsByPassage.has(t.passage_id)) threadsByPassage.set(t.passage_id, []);
-    threadsByPassage.get(t.passage_id).push(t);
-    renderBody(t.passage_id);
+    addThread(json.thread);
     window.getSelection().removeAllRanges();
     hidePopover();
   });
@@ -399,6 +405,10 @@ function connectLive() {
     if (!list) return;
     if (list.querySelector(`[data-cid="${c.id}"]`)) return;
     list.append(commentEl(c));
+  });
+
+  socket.on("thread:new", ({ thread }) => {
+  if (bodyEls.has(thread.passage_id)) addThread(thread); 
   });
 
 
