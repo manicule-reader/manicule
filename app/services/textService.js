@@ -36,6 +36,8 @@ async function importText(id) {
   const sections = splitSections(raw);
   if (sections.length === 0) return null;
 
+  checkSections(sections);
+
   await saveBook({
     gutenbergId: id,
     title: meta.title,
@@ -45,4 +47,25 @@ async function importText(id) {
   return raw;
 }
 
-module.exports = { getText, importText };
+//thrown when a book's layout isn't something the splitter handles yet
+class UnsupportedFormatError extends Error {}
+
+function checkSections(sections) {
+  if (sections.length === 0) {
+    throw new UnsupportedFormatError('no sections found');
+  }
+
+  //no headings matched, so everything landed in front matter (poems, collections, odd layouts)
+  if (sections.length === 1 && sections[0].title === 'Front Matter') {
+    throw new UnsupportedFormatError('no chapter headings found');
+  }
+
+  const total = sections.reduce((n, s) => n + s.passages.length, 0);
+
+  //front matter should be a small slice of the book, not most of it
+  if (sections[0].title === 'Front Matter' && sections[0].passages.length > total / 2) {
+    throw new UnsupportedFormatError('most of the text is before the first heading');
+  }
+}
+
+module.exports = { getText, importText, UnsupportedFormatError};
