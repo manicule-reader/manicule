@@ -1,5 +1,19 @@
 -- Dev-only wipes book data and reloads a known sample
 
+INSERT INTO users (username, email, password_hash)
+VALUES
+(
+    'sampleuser1',
+    'sample1@example.com',
+    '$2b$10$8osTxl.BCb8xB8cCBu8.0uJSLvqVxYeCXQjC14XkbkG//gPgs.ohK'
+),
+(
+    'sampleuser2',
+    'sample2@example.com',
+    '$2b$10$8osTxl.BCb8xB8cCBu8.0uJSLvqVxYeCXQjC14XkbkG//gPgs.ohK'
+)
+ON CONFLICT (username) DO NOTHING;
+
 TRUNCATE books RESTART IDENTITY CASCADE;
 
 INSERT INTO books (gutenberg_id, title, author)
@@ -22,3 +36,23 @@ INSERT INTO passages (book_id, section_id, seq, body) VALUES
 (1, 2, 10, $$Mr. Bennet was among the earliest of those who waited on Mr. Bingley. He had always intended to visit him, though to the last always assuring his wife that he should not go; and till the evening after the visit was paid she had no knowledge of it.$$),
 (1, 2, 11, $$It was then disclosed in the following manner. Observing his second daughter employed in trimming a hat, he suddenly addressed her with:$$),
 (1, 2, 12, $$"I hope Mr. Bingley will like it, Lizzy."$$);
+
+-- Sample reading group with two members
+
+INSERT INTO groups (name, book_id, invite_code, owner_id)
+SELECT
+    'Pride and Prejudice Reading Group',
+    b.id,
+    'sample-pride-and-prejudice-group',
+    u.id
+FROM books b
+JOIN users u ON u.username = 'sampleuser1'
+WHERE b.gutenberg_id = 1342;
+
+INSERT INTO group_members (group_id, user_id)
+SELECT
+    g.id,
+    u.id
+FROM groups g
+JOIN users u ON u.username IN ('sampleuser1', 'sampleuser2')
+WHERE g.invite_code = 'sample-pride-and-prejudice-group';
