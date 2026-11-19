@@ -36,9 +36,9 @@ function notFound() {
 
 function renderNav(data) {
   const nav = $(".chapter-nav");
-  if (data.prev) nav.append(link(readerUrl(data.prev), "« prev"));
+  if (data.prev != null) nav.append(link(readerUrl(data.prev), "« prev"));
   nav.append(link(readerUrl(null), "contents"));
-  if (data.next) nav.append(link(readerUrl(data.next), "next »"));
+  if (data.next != null) nav.append(link(readerUrl(data.next), "next »"));
 }
 
 async function showContents() {

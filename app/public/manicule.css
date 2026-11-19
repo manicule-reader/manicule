@@ -104,3 +104,21 @@ button, input, textarea, select {
 }
 .thread-panel .comment p { margin: 0.25em 0 0; white-space: pre-wrap; }
 .thread-panel textarea { width: 100%; box-sizing: border-box; }
+.auth-page {
+  max-width: 32em;
+  margin: 4em auto;
+}
+
+.auth-card {
+  margin-top: 2em;
+}
+
+.auth-card input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+#auth-error {
+  color: #8b1e1e;
+  min-height: 1.5em;
+}
