@@ -60,6 +60,15 @@ async function showContents() {
 }
 
 // ---------- highlights ----------
+// heatmap: shade by how many different people highlighted a piece of text,
+// capped so 7 vs 9 readers doesn't matter
+const HEAT_LEVELS = 4;
+
+function heatLevel(covering) {
+  const people = new Set(covering.map((t) => t.created_by));
+  return Math.min(people.size, HEAT_LEVELS);
+}
+
 
 // Fill a .pbody with the passage text, wrapping highlighted ranges in <mark>.
 // Overlapping highlights: cut the text at every start/end offset, then each
@@ -89,9 +98,9 @@ function renderBody(pid) {
       el.append(piece);
     } else {
       const mark = document.createElement("mark");
-      mark.className = "hl";
+            const level = heatLevel(covering);
+      mark.className = `hl hl-${level}`;
       mark.dataset.threads = covering.map((t) => t.id).join(",");
-      if (covering.length > 1) mark.classList.add("hl-overlap");
       mark.textContent = piece;
       el.append(mark);
     }
