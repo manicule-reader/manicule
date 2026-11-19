@@ -6,6 +6,7 @@ const path = require("path");
 const express = require("express");
 const authRoutes = require("./routes/auth");
 const groupRoutes = require("./routes/groups");
+const threadRoutes = require("./routes/threads");
 
 const app = express();
 
@@ -35,6 +36,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/groups", groupRoutes);
+app.use("/api/groups/:groupId", threadRoutes);
 
 // Strict id parsing for digits only 
 const MAX_INT4 = 2147483647;
