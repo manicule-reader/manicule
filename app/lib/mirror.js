@@ -1,9 +1,8 @@
 const axios = require("axios");
 const contact = process.env.gutenberg_contact;
-if (!contact) {
-  console.log("Set gutenberg_contact in .env");
-  process.exit(1);
-}
+const USER_AGENT = contact
+  ? `manicule-school-project (${contact})`
+  : "manicule-school-project";
 
 const BASE = "https://mirrors.xmission.com/gutenberg/";
 
@@ -29,7 +28,7 @@ async function fetchFromMirror(id) {
   for (const filename of filenames) {
     try {
       const response = await axios.get(dir + filename, {
-        headers: { "User-Agent": "manicule-testing (" + contact + ")" },
+        headers: { "User-Agent": USER_AGENT },
       });
       return response.data;
     } catch (error) {

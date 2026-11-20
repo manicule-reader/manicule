@@ -9,10 +9,9 @@ const pool = require("../app/db/pool");
 
 //grab the contact email from the .env and end early if it's not there
 const contact = process.env.gutenberg_contact;
-if (!contact) {
-    console.log("Set gutenberg_contact in .env.json");
-    process.exit(1);
-}
+const USER_AGENT = contact
+  ? `manicule-school-project (${contact})`
+  : "manicule-school-project";
 
 const url = "https://www.gutenberg.org/cache/epub/feeds/pg_catalog.csv.gz";
 const cachePath = path.join(__dirname, ".cache/pg_catalog.csv.gz");
@@ -23,7 +22,7 @@ async function getCatalogBytes() {
         return fs.readFileSync(cachePath);
     }
     const response = await axios.get(url, {
-        headers: { "User-Agent": "manicule-testing (" + contact + ")" },
+        headers: { "User-Agent": USER_AGENT },
         //get raw bytes instead of letting axios turn them into a string
         responseType: "arraybuffer"
     });
