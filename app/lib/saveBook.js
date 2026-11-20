@@ -4,10 +4,11 @@ const pool = require("../db/pool");
 //sections is the numbered output of splitSections: [{ seq, title, passages: [{ seq, body }] }]
 //returns the new book id, or null if the book was already in the db
 async function saveBook({ gutenbergId, title, author, sections }) {
+  const client = await pool.connect();
   try {
-    await pool.query('BEGIN');
+    await client.query('BEGIN');
 
-    const bookRes = await pool.query(
+    const bookRes = await client.query(
       `INSERT INTO books (gutenberg_id, title, author)
        VALUES ($1, $2, $3)
        ON CONFLICT (gutenberg_id) DO NOTHING
@@ -16,13 +17,13 @@ async function saveBook({ gutenbergId, title, author, sections }) {
     );
     //no row back means another request already imported this book
     if (bookRes.rows.length === 0) {
-      await pool.query('ROLLBACK');
+      await client.query('ROLLBACK');
       return null;
     }
     const bookId = bookRes.rows[0].id;
 
     //unnest turns the arrays into rows, so this is one insert no matter how many sections
-    const sectionRes = await pool.query(
+    const sectionRes = await client.query(
       `INSERT INTO sections (book_id, seq, title)
        SELECT $1, * FROM unnest($2::int[], $3::text[])
        RETURNING id, seq`,
@@ -41,17 +42,19 @@ async function saveBook({ gutenbergId, title, author, sections }) {
         bodies.push(p.body);
       }
     }
-    await pool.query(
+    await client.query(
       `INSERT INTO passages (book_id, section_id, seq, body)
        SELECT $1, * FROM unnest($2::int[], $3::int[], $4::text[])`,
       [bookId, sectionIds, seqs, bodies]
     );
 
-    await pool.query('COMMIT');
+    await client.query('COMMIT');
     return bookId;
   } catch (err) {
-    await pool.query('ROLLBACK');
+    await client.query('ROLLBACK');
     throw err;
+  } finally {
+    client.release();
   }
 }
 
