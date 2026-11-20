@@ -7,7 +7,7 @@ require("dotenv").config();
 //dotenv has to load before the pool is required
 const pool = require("../app/db/pool");
 
-//grab the contact email from the .env and end early if it's not there
+//grab the contact email from the .env IF it's there
 const contact = process.env.gutenberg_contact;
 const USER_AGENT = contact
   ? `manicule-school-project (${contact})`

@@ -12,9 +12,8 @@ async function findBook(id) {
   return rows[0] || null;
 }
 
-//returns the text id on upload success, null on failure, or nothing if we already have the text
+//returns the text id on upload success, null on failure, or -1 if we already have the text
 async function getText(id) {
-  //check the db first and return early if we already have it
   let inDB = await findBook(id);
   if (inDB) {
     return -1;
@@ -42,12 +41,14 @@ async function importText(id) {
   //will throw if the sections are not as expected
   checkSections(sections);
 
-  await saveBook({
+  const saved = await saveBook({
     gutenbergId: id,
     title: meta.title,
     author: meta.author,
     sections,
   });
+  //saveBook returns null if another request imported this text first
+  if (saved === null) return -1;
   return id;
 }
 
