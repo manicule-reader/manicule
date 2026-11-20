@@ -80,7 +80,7 @@ Open http://localhost:3000/read/1
 ## Importing Gutenberg texts
 First, you need to pull the Gutenberg catalog to your local DB:
 
-1. In your top-level `.env`, set:
+1. In your top-level `.env`, optionally set:
 ```
 gutenberg_contact=someemail@random.com
 ```
@@ -88,7 +88,7 @@ This email would only ever be used if the script was performing in some weird wa
 
 2.
 ```
-node scripts/pull_gutenberg_catalog.js
+npm run pull-catalog
 ```
 This will pull the catalog and upload it to your local database IF you have the database URL in your `.env`.
 

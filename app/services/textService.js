@@ -12,12 +12,12 @@ async function findBook(id) {
   return rows[0] || null;
 }
 
-//returns the text, or null if it doesn't exist
+//returns the text id on upload success, null on failure, or nothing if we already have the text
 async function getText(id) {
   //check the db first and return early if we already have it
   let inDB = await findBook(id);
   if (inDB) {
-    return;
+    return -1;
   }
 
   return importText(id);
@@ -48,7 +48,7 @@ async function importText(id) {
     author: meta.author,
     sections,
   });
-  return raw;
+  return id;
 }
 
 //thrown when a book's layout isn't something the splitter handles yet
@@ -56,7 +56,6 @@ class UnsupportedFormatError extends Error {}
 
 function checkSections(sections) {
   if (sections.length === 0) {
-    console.log("1");
     throw new UnsupportedFormatError('no sections found');
   }
   
@@ -64,7 +63,6 @@ function checkSections(sections) {
 
   //front matter should be a small slice of the book, not most of it
   if (sections[0].title === 'Front Matter' && sections[0].passages.length > total / 2) {
-    console.log("2");
     throw new UnsupportedFormatError('most of the text is before the first heading');
   }
 }

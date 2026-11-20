@@ -4,7 +4,6 @@ const pgSession = require("connect-pg-simple")(session);
 const pool = require("./db/pool");
 const path = require("path");
 const express = require("express");
-const axios = require("axios");
 const authRoutes = require("./routes/auth");
 const textRoutes = require("./routes/texts");
 const groupRoutes = require("./routes/groups");

@@ -6,8 +6,10 @@ const router = express.Router();
 
 router.get("/:id", validateTextId, async (req, res) => {
   try {
-    const text = await getText(req.params.id);
-    if (text === null) return res.status(404).json({ error: 'not found' });
+    const id = await getText(req.params.id);
+    if (id === null) {return res.status(404).json({ error: 'not found' });}
+    else if (id === -1) {console.log("Text already in DB");}
+    else {console.log(`Text id ${id} uploaded to DB`);}
     res.send();
   } catch (err) {
     if (err instanceof UnsupportedFormatError) {
