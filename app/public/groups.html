@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My Groups - Manicule</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/light.css">
+  <link rel="stylesheet" href="/manicule.css">
+</head>
+<body>
+  <header class="groups-header">
+    <h1>Manicule</h1>
+
+    <div class="account-info">
+      <span id="username"></span>
+      <button id="logout-button" type="button">Log out</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="groups-title">
+      <h2>My Groups</h2>
+      <button id="create-group-button" type="button">Create group</button>
+    </div>
+
+    <p id="groups-error" role="alert"></p>
+
+    <div id="groups-list">
+      <p>Loading groups...</p>
+    </div>
+  </main>
+
+  <script src="/groups.js"></script>
+</body>
+</html>

@@ -74,3 +74,42 @@ button, input, textarea, select {
   color: #8b1e1e;
   min-height: 1.5em;
 }
+
+.groups-header,
+.groups-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1em;
+}
+
+.account-info {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+}
+
+#groups-list {
+  display: grid;
+  gap: 1em;
+  margin-top: 2em;
+}
+
+.group-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2em;
+  padding: 1em;
+  border: 1px solid var(--border);
+  text-decoration: none;
+}
+
+.group-row div {
+  display: grid;
+  gap: 0.25em;
+}
+
+.group-row:hover {
+  background: var(--background-alt);
+}
