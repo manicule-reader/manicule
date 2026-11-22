@@ -56,6 +56,54 @@ button, input, textarea, select {
   border-top: 1px solid var(--border);
 }
 
+/* highlight things */
+/* heatmap: darker = more people highlighted it (level 4 means 4+) */
+.pbody mark.hl { color: inherit; padding: 0; cursor: pointer; }
+.pbody mark.hl-1 { background: rgba(196, 140, 40, 0.22); }
+.pbody mark.hl-2 { background: rgba(196, 140, 40, 0.38); }
+.pbody mark.hl-3 { background: rgba(176, 116, 30, 0.52); }
+.pbody mark.hl-4 { background: rgba(150, 92, 22, 0.62); }
+
+/*  box that pops up under a selection */
+.hl-popover {
+  position: absolute;
+  z-index: 10;
+  max-width: 340px;
+  padding: 0.5em;
+  background: var(--background-body);
+  border: 1px solid var(--border);
+  box-shadow: 0 2px 6px #2b211833;
+}
+.hl-popover[hidden] { display: none; }
+.hl-popover textarea { width: 100%; box-sizing: border-box; }
+.hl-error { margin: 0.25em 0 0; font-size: 0.85em; color: #9b2c1c; }
+.hl-error:empty { display: none; }
+
+/* thread panel */
+.thread-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 20;
+  width: 320px;
+  height: 100%;
+  overflow: auto;
+  box-sizing: border-box;
+  padding: 1em;
+  background: var(--background-body);
+  border-left: 1px solid var(--border);
+}
+.thread-panel[hidden] { display: none; }
+
+
+.thread-panel .thread { margin-top: 1em; }
+.thread-panel .comment {
+  margin: 0 0 1em;
+  padding-bottom: 0.5em;
+  border-bottom: 1px solid var(--border);
+}
+.thread-panel .comment p { margin: 0.25em 0 0; white-space: pre-wrap; }
+.thread-panel textarea { width: 100%; box-sizing: border-box; }
 .auth-page {
   max-width: 32em;
   margin: 4em auto;
