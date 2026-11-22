@@ -23,6 +23,19 @@
       <button id="create-group-button" type="button">Create group</button>
     </div>
 
+    <form id="create-group-form" hidden>
+        <label for="group-name">Group name</label>
+        <input
+          id="group-name"
+          name="group-name"
+          type="text"
+          maxlength="100"
+          required
+        >
+        <button type="submit">Continue to Library</button>
+        <button id="cancel-create-group" type="button">Cancel</button>
+    </form>
+
     <p id="groups-error" role="alert"></p>
 
     <div id="groups-list">

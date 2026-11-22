@@ -113,3 +113,14 @@ button, input, textarea, select {
 .group-row:hover {
   background: var(--background-alt);
 }
+
+#create-group-form {
+  margin: 1em 0 2em;
+  padding: 1em;
+  border: 1px solid var(--border);
+}
+
+#create-group-form input {
+  width: 100%;
+  box-sizing: border-box;
+}
