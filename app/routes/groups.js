@@ -95,11 +95,19 @@ router.get("/", requireAuth, async (req, res) => {
          g.id,
          g.name,
          g.book_id,
+         b.title AS book_title,
          g.owner_id,
-         g.created_at
+         g.created_at,
+         COUNT(all_members.user_id)::INTEGER AS member_count
        FROM groups g
-       JOIN group_members gm ON g.id = gm.group_id
-       WHERE gm.user_id = $1
+       JOIN group_members my_membership
+         ON my_membership.group_id = g.id
+       JOIN books b
+         ON b.id = g.book_id
+       LEFT JOIN group_members all_members
+         ON all_members.group_id = g.id
+       WHERE my_membership.user_id = $1
+       GROUP BY g.id, b.title
        ORDER BY g.created_at DESC`,
       [req.session.userId]
     );
