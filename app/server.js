@@ -5,6 +5,7 @@ const pool = require("./db/pool");
 const path = require("path");
 const express = require("express");
 const authRoutes = require("./routes/auth");
+const textRoutes = require("./routes/texts");
 const groupRoutes = require("./routes/groups");
 const threadRoutes = require("./routes/threads");
 
@@ -35,6 +36,7 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/api/auth", authRoutes);
+app.use("/api/texts", textRoutes);
 app.use("/api/groups", groupRoutes);
 app.use("/api/groups/:groupId", threadRoutes);
 
@@ -121,7 +123,6 @@ app.get("/login", (req, res) => {
 app.get(["/read/:id", "/read/:id/:section"], (req, res) => {
   res.sendFile(path.join(__dirname, "public", "reader.html"));
 });
-
 
 const port = process.env.PORT || 3000;
 
