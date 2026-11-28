@@ -1,7 +1,5 @@
 const axios = require("axios");
 const zlib = require("zlib");
-const fs = require("fs");
-const path = require("path");
 const { parse } = require("csv-parse/sync");
 require("dotenv").config();
 //dotenv has to load before the pool is required
@@ -14,22 +12,14 @@ const USER_AGENT = contact
   : "manicule-school-project";
 
 const url = "https://www.gutenberg.org/cache/epub/feeds/pg_catalog.csv.gz";
-const cachePath = path.join(__dirname, ".cache/pg_catalog.csv.gz");
 
 async function getCatalogBytes() {
-    if (fs.existsSync(cachePath)) {
-        //reuse the saved copy so we only hit gutenberg once while developing
-        return fs.readFileSync(cachePath);
-    }
     const response = await axios.get(url, {
         headers: { "User-Agent": USER_AGENT },
         //get raw bytes instead of letting axios turn them into a string
         responseType: "arraybuffer"
     });
-    const data = Buffer.from(response.data);
-    fs.mkdirSync(path.dirname(cachePath), { recursive: true });
-    fs.writeFileSync(cachePath, data);
-    return data;
+    return Buffer.from(response.data);
 }
 
 //"Austen, Jane, 1775-1817" -> "Jane Austen", only the first author is kept
