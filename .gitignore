@@ -147,6 +147,3 @@ vite.config.ts.timestamp-*
 
 # Turbo Repo
 .turbo
-
-#cached files in the scripts/ dir
-scripts/.cache
