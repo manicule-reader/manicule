@@ -2,6 +2,7 @@ const express = require("express");
 const crypto = require("crypto");
 const pool = require("../db/pool");
 const requireAuth = require("../middleware/auth");
+const requireGroupMember = require("../middleware/groupAuth");
 
 const router = express.Router();
 
@@ -113,6 +114,30 @@ router.get("/", requireAuth, async (req, res) => {
       error: "Unable to retrieve groups",
     });
   }
+});
+
+router.get("/:groupId", requireAuth, requireGroupMember, async (req, res) => {
+    try {
+        const result = await pool.query(
+            `SELECT
+            g.id,
+            g.name,
+            g.book_id,
+            g.owner_id,
+            g.created_at
+            FROM groups g
+            WHERE g.id = $1`,
+            [req.params.groupId]
+        );
+        return res.status(200).json({
+            group: result.rows[0],
+        });
+    } catch (error) {
+        console.error("Get group error:", error);
+        return res.status(500).json({
+            error: "Unable to retrieve group",
+        });
+    }
 });
 
 module.exports = router;

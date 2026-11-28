@@ -7,6 +7,7 @@ const express = require("express");
 const authRoutes = require("./routes/auth");
 const textRoutes = require("./routes/texts");
 const groupRoutes = require("./routes/groups");
+const threadRoutes = require("./routes/threads");
 
 const app = express();
 
@@ -37,6 +38,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/api/auth", authRoutes);
 app.use("/api/texts", textRoutes);
 app.use("/api/groups", groupRoutes);
+app.use("/api/groups/:groupId", threadRoutes);
 
 // Strict id parsing for digits only 
 const MAX_INT4 = 2147483647;
@@ -112,6 +114,10 @@ app.get("/api/books/:id/sections/:seq", async (req, res) => {
     console.error("Section fetch error:", error);
     res.status(500).json({ error: "Unable to load section" });
   }
+});
+
+app.get("/login", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "auth.html"));
 });
 
 app.get(["/read/:id", "/read/:id/:section"], (req, res) => {
